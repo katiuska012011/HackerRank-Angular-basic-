@@ -1,0 +1,146 @@
+1- TEMPERATURE-CONVERTER
+
+    temperature-converter.component.html
+
+
+<div class="layout-column align-items-center mt-50" >
+    <section class="layout-row align-items-center justify-content-between">
+      <label>Celsius: </label>
+      <input type="number" class="large" data-test-id="celsius-input" [(ngModel)]="celsius" (ngModelChange)="changed($event,'celsius')"  />
+    </section>
+  
+    <section class="layout-row align-items-center justify-content-between">
+      <label>Fahrenheit: </label>
+      <input type="number" class="large" data-test-id="fahrenheit-input" [(ngModel)]="fahrenheit" (ngModelChange)="changed($event,'fahrenheit')"  />
+    </section>
+  </div>
+
+
+     temperature-converter.component.ts
+
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-temperature-converter',
+  templateUrl: './temperature-converter.component.html',
+  styleUrls: ['./temperature-converter.component.css']
+})
+export class TemperatureConverterComponent implements OnInit {
+
+
+  constructor( ) { }
+
+  celsius: string | any;
+  fahrenheit: string | any;
+
+  ngOnInit(): void {
+
+  }
+  changed(value : any, type: any){
+    if(value){
+      if(type === 'celsius'){
+        let fah = (value *  9/5)+32;
+        this.fahrenheit = fah.toFixed(1);
+      }else{
+        let cel = (value - 32) * (5/9);
+        this.celsius = cel.toFixed(1);
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+2- WEATHER DETAILS
+
+   weatherDetails.component.html
+
+  
+<div class="weather-data layout-column align-items-center mt-50">
+
+    <section class="layout-row align-items-center justify-content-center mt-5">
+      <label>Enter City: </label>
+      <input type="text" [(ngModel)]="city"  class="large ml-30" placeholder="Seattle" data-test-id="app-input" (ngModelChange)="validateData($event)"/>
+    </section>
+  
+    <section class="mt-20 layout-row align-items-center justify-content-center">
+      <div class="card outlined">
+          <div *ngIf="cityDetails && hideDetails" data-test-id="weather-details" class="card-text pt-10 layout-row justify-content-between">
+              <div class="mt-20 outlined">
+                <button class="icon-only mx-2">
+                  <i class="material-icons">wb_sunny</i>
+                </button>
+                <span data-test-id="output-temperature" class="temperature"> {{cityDetails.temperature}}</span>
+              </div>
+              <div class="mr-15 mb-15">
+                <div data-test-id="output-wind" class="mt-20">
+                  Wind: {{cityDetails.wind}}
+                </div>
+                <div data-test-id="output-humidity" class="mt-20">
+                  Humidity: {{cityDetails.humidity}}
+                </div>
+              </div>
+          </div>
+          <div *ngIf="showNoResult" data-test-id="no-results" class="card-text">No Results Found</div>
+      </div>
+    </section>
+  </div>
+
+
+
+  weatherDetails.component.ts
+
+import { Component, Input, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'weather-details',
+  templateUrl: './weatherDetails.component.html',
+  styleUrls: ['./weatherDetails.component.scss']
+})
+
+export class WeatherDetails implements OnInit {
+  @Input() weatherData: data[];
+  city: any;
+  cityDetails: any;
+  showNoResult: boolean = false;
+  hideDetails: boolean = false;
+
+  ngOnInit() {
+
+  }
+
+  validateData(value: any) {
+    if (value) {
+      let foundCityDetails = this.weatherData.find(city => city.name.toLowerCase() == value.toLowerCase());
+      if (foundCityDetails) {
+        this.cityDetails = foundCityDetails;
+        this.hideDetails = true;
+        this.showNoResult = false;
+      }
+      else {
+        this.showNoResult = true;
+        this.hideDetails = false;
+      }
+    } else {
+      this.showNoResult = false;
+      this.hideDetails = false;
+    }
+
+  }
+}
+
+interface data {
+  name: string;
+  temperature: string;
+  wind: string;
+  humidity: string;
+}
+
+
+
